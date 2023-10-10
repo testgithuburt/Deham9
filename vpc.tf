@@ -1,5 +1,5 @@
 # VPC Creation using CIDR block available in vars.tf
-
+# VPC Creation using CIDR block available in vars.tf counting objects
 resource "aws_vpc" "provisionerVPC"{
     cidr_block = var.vpc_cidr
     enable_dns_hostnames=true
