@@ -24,7 +24,7 @@ resource "aws_vpc" "my_vpc" {
   }
 }
 # creating public and private subnets 
-resource "aws_subnet" "public_subnet_1" {
+resource "aws_subnet" "public_subnet" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = "10.0.1.0/24"
   availability_zone = "us-west-2a"  
@@ -32,39 +32,19 @@ resource "aws_subnet" "public_subnet_1" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "public_subnet_1"
+    Name = "public_subnet"
   }
 }
 
-resource "aws_subnet" "public_subnet_2" {
+resource "aws_subnet" "private_subnet" {
   vpc_id     = aws_vpc.my_vpc.id
   cidr_block = "10.0.2.0/24"
   availability_zone = "us-west-2b"  
 
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
-    Name = "public_subnet_2"
-  }
-}
-
-resource "aws_subnet" "private_subnet_1" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.0.3.0/24"
-  availability_zone = "us-west-2a"  
-
-  tags = {
-    Name = "private_subnet_1"
-  }
-}
-
-resource "aws_subnet" "private_subnet_2" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.0.4.0/24"
-  availability_zone = "us-west-2b"  
-
-  tags = {
-    Name = "private_subnet_2"
+    Name = "private_subnet"
   }
 }
 
@@ -77,21 +57,64 @@ resource "aws_internet_gateway" "my_gw" {
     Name = "my_gw"
   }
 } 
-# Creating route table
-resource "aws_route_table" "my_rt" {
+# Public Route Table
+resource "aws_route_table" "public_route"{
+    vpc_id = aws_vpc.my_vpc.id
+
+    route {
+        cidr_block = "10.0.1.0/24"
+        gateway_id = aws_internet_gateway.my_gw.id
+    }
+    tags = {
+      Name = "public-route"  
+    }
+}
+# Associate Public Subnet with Public Route Table
+resource "aws_route_table_association" "public_subnet_route" {
+  subnet_id      = aws_subnet.public_subnet.id
+  route_table_id = aws_route_table.public_route.id
+}
+
+# Private Route Table
+resource "aws_route_table" "private_route"{
+    vpc_id = aws_vpc.my_vpc.id
+
+    route {
+        cidr_block = "10.0.2.0/24"
+        gateway_id = aws_internet_gateway.my_gw.id
+    }
+    tags = {
+      Name = "private-route"  
+    }
+}
+
+# Associate Private Subnet with Private Route Table
+resource "aws_route_table_association" "private_subnet_route" {
+  subnet_id      = aws_subnet.private_subnet.id
+  route_table_id = aws_route_table.private_route.id
+}
+# NACL 
+resource "aws_network_acl" "my_network_acl" {
   vpc_id = aws_vpc.my_vpc.id
+}
 
-  route = []
-
-  tags = {
-    Name = "my_rt"
-  }
+resource "aws_network_acl_rule" "my_network_acl" {
+  network_acl_id = aws_network_acl.my_network_acl.id
+  rule_number    = 200
+  egress         = false
+  protocol       = "tcp"
+  rule_action    = "allow"
+  cidr_block     = aws_vpc.my_vpc.cidr_block
+  from_port      = 22
+  to_port        = 22
 }
 # Security Group Creation for provisionerVPC
 resource "aws_security_group" "allow_ssh_http" {
   name        = "allow_ssh_http"
   description = "Allow SSH and http inbound traffic"
   vpc_id      = aws_vpc.my_vpc.id
+
+
   # Ingress Security Port 22 (Inbound)
   ingress {
     description      = "SSH from VPC"
@@ -121,9 +144,7 @@ resource "aws_security_group" "allow_ssh_http" {
   }
 }
 
-
-# EC2 Instances
-  
+#ec2 creating
 # terraform {
 #   required_providers {
 #     aws = {
@@ -135,22 +156,30 @@ resource "aws_security_group" "allow_ssh_http" {
 #   required_version = ">= 0.14.9"
 # }
 
-
-# #Provider profile and region in which all the resources will create
+#Provider profile and region in which all the resources will create
 # provider "aws" {
 #   profile = "default"
 #   region  = "us-west-2"
 # }
+resource "aws_instance" "web_server" {
+  ami           = "ami-0e2e9c570f999a4c8" # This is an example Amazon Linux AMI ID. Change it according to your requirements.
+  instance_type = "t2.micro"
+  key_name      = "web-key"   
 
-# resource "aws_instance" "terraform" {
-#   ami           = "ami-09100e341bda441c0" # This is an example Amazon Linux AMI ID. Change it according to your requirements.
-#   instance_type = "t2.micro"
-#   key_name      = "terra-key"   # Change this to your AWS key pair name
+  tags = {
+    Name = "my-web"
+  }
+}
 
-#   tags = {
-#     Name = "terraform-instance"
-#   }
-# }
+resource "aws_subnet" "my_subnet" {
+  vpc_id     = aws_vpc.my_vpc.id
+  cidr_block = "10.0.1.0/24"
+
+  tags = {
+    Name = "my-subnet"
+  }
+}
+
 
 # resource "aws_subnet" "my_vpc" {
 #   vpc_id     = aws_vpc.my_vpc.id
