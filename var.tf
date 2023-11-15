@@ -1,8 +1,8 @@
 variable "AWS_ACCESS_KEY"{
-    description="ASIA5GNN7GIUSF62TN43"
+    description="ASIA5GNN7GIUVNW2MMGQ"
 }
 variable "AWS_SECRET_KEY"{
-    description="Kye0lI43777XEd2BBQF8OYDYLry/7vmQ9YwL/bZB"
+    description="FjNCiQw2sfgNdKhwm9zAyuxQysJ+haKpC1APGVA+"
 }
 variable "AWS_REGION"{
     default="us-west-2"
@@ -10,13 +10,19 @@ variable "AWS_REGION"{
 }
 # Network Mask - 255.255.255.0 Addresses Available - 256
 variable "vpc_cidr"{
+    default = "10.0.0.0/16"
+}
+variable "public_cidr_1"{
     default = "10.0.1.0/24"
 }
-variable "public_cidr"{
-    default = "10.0.1.0/28"
+variable "private_cidr_1"{
+    default = "10.0.2.0/24"
 }
-variable "private_cidr"{
-    default = "10.0.1.16/28"
+variable "public_cidr_2"{
+    default = "10.0.3.0/24"
+}
+variable "private_cidr_2"{
+    default = "10.0.4.0/24"
 }
 variable "cidr_blocks"{
     default = "0.0.0.0/0"
@@ -27,6 +33,11 @@ variable "instance_type"{
 variable "apac_region"{
     default="us-west-2"
 }
+variable "vpc"{
+    default="vpc-05bdb1bfbeba0a2ef"
+}
+
+
 variable "AMIS"{
     type = map(string)
     description= "Region specific AWS Machine Images (AMI)"
