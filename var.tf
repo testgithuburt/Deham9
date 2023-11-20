@@ -1,8 +1,8 @@
 variable "AWS_ACCESS_KEY"{
-    description="ASIA5GNN7GIUVNW2MMGQ"
+    description="ASIA5GNN7GIU6FHAIUUK"
 }
 variable "AWS_SECRET_KEY"{
-    description="FjNCiQw2sfgNdKhwm9zAyuxQysJ+haKpC1APGVA+"
+    description="DDETqffwgqEE0dFBW6T83gv008s3swppwiSCGMDH"
 }
 variable "AWS_REGION"{
     default="us-west-2"
@@ -34,7 +34,7 @@ variable "apac_region"{
     default="us-west-2"
 }
 variable "vpc"{
-    default="vpc-05bdb1bfbeba0a2ef"
+    default="vpc-01814c46d99389a39"
 }
 
 

@@ -21,6 +21,15 @@ resource "aws_security_group_rule" "http_ingress_access"{
     type = "ingress"
     cidr_blocks = [var.cidr_blocks]
 }
+# Ingress Security Port 80 (Inbound)
+resource "aws_security_group_rule" "https_ingress_access"{
+    from_port = 443
+    protocol = "tcp"
+    security_group_id = aws_security_group.dev_terraform_sg_allow_ssh_http.id
+    to_port = 443
+    type = "ingress"
+    cidr_blocks = [var.cidr_blocks]
+}
 # Ingress Security Port 3306 (Inbound)
 resource "aws_security_group_rule" "rds_ingress_access"{
     from_port = 3306

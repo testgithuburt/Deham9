@@ -1,6 +1,6 @@
 # Network ACL in VPC 
 resource "aws_network_acl" "nacl" {
-  vpc_id = var.vpc 
+  vpc_id = var.vpc
 }
 resource "aws_network_acl_rule" "allow_all_inbound" {
   network_acl_id = aws_network_acl.nacl.id
